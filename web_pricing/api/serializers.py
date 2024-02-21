@@ -2,17 +2,41 @@ from rest_framework import serializers
 
 from pricing.models import Результат_Стоимость_шкафов_CSKU, Результат_Шкафы_с_артикулами
 
-from .models import Ya_links
+from ya_disk.models import Ya_links
 
 
 
+class Ya_linksSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ya_links
+        fields = [
+            'preview',
+            'public_url',
+            'name',
+            'file',
+        ]
+
+
+class WardrobePriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Результат_Стоимость_шкафов_CSKU
+        fields = [
+            'Sum_База_РРЦ', 'Sum_Сибирь_РРЦ', 'Sum_База_ОПТ',
+            'Sum_Сибирь_ОПТ', 'Sum_Экспорт', 'Sum_Новоцентр_ОПТ',
+            'Sum_Крым_ОПТ'
+        ]
 
 
 class WardrobeSerializer(serializers.ModelSerializer):
+    links = Ya_linksSerializer(read_only=True)
+    wardropes_price = WardrobePriceSerializer(read_only=True)
 
     class Meta:
         model = Результат_Шкафы_с_артикулами
         fields = [
+            'wardropes_price',
+            'links',
             'серия',
             'тип_шкафа',
             'вариант_исполнения_шкафа',
@@ -63,41 +87,15 @@ class WardrobeSerializer(serializers.ModelSerializer):
             "сек3_материал": representation.pop("д3_сек3_материал"),
             "сек4_материал": representation.pop("д3_сек4_материал"),
         }
-
-        return representation
-    
-
-class WardrobePriceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Результат_Стоимость_шкафов_CSKU
-        fields = [
-            'Sum_База_РРЦ', 'Sum_Сибирь_РРЦ', 'Sum_База_ОПТ',
-            'Sum_Сибирь_ОПТ', 'Sum_Экспорт', 'Sum_Новоцентр_ОПТ',
-            'Sum_Крым_ОПТ'
-        ]
-
-
-
-class Ya_linksSerializer(serializers.ModelSerializer):
-    wardropes = WardrobeSerializer(read_only=True)
-    wardropes_price = WardrobePriceSerializer(read_only=True)
-
-    class Meta:
-        model = Ya_links
-        fields = [
-            # 'preview',
-            'public_url',
-            'name',
-            'file',
-            'wardropes',
-            'wardropes_price'
-        ]
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation.update(representation.pop("wardropes"))
+        
         representation.update(representation.pop("wardropes_price"))
+        representation.update(representation.pop("links"))
         return representation
+
+
+
+
+
 
 
 class UniqueFieldValuesSerializer(serializers.Serializer):

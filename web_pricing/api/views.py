@@ -7,12 +7,12 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
 from pricing.models import Результат_Стоимость_шкафов_CSKU, Результат_Шкафы_с_артикулами
-from ya_disk.paginators import PageLimitPaginator
-from ya_disk.filters import LinksFilter, WardrobeFilter
+from .paginators import PageLimitPaginator
+from .filters import LinksFilter, WardrobeFilter
 
 from .serializers import UniqueFieldValuesSerializer, WardrobePriceSerializer, WardrobeSerializer, Ya_linksSerializer
-from .models import Ya_links
-from .ya_api import fetch_data_and_update_db
+from ya_disk.models import Ya_links
+from ya_disk.ya_api import fetch_data_and_update_db
 
 
 @transaction.atomic
@@ -96,7 +96,7 @@ class WardrobesPricesViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class WardrobesViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Результат_Шкафы_с_артикулами.objects.all()
+    queryset = Результат_Шкафы_с_артикулами.objects.all().prefetch_related('links').prefetch_related('wardropes_price')
     serializer_class = WardrobeSerializer
     pagination_class = PageLimitPaginator
     # filter_backends = (DjangoFilterBackend,)

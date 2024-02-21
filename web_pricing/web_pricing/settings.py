@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "debug_toolbar",
-    "cacheops",
     "ya_disk.apps.YaDiskConfig",
     "pricing.apps.PricingConfig",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [

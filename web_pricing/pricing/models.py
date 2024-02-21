@@ -1,7 +1,5 @@
 from django.db import models
 
-from ya_disk.models import Ya_links
-
 
 class Результат_Шкафы_с_артикулами(models.Model):
     код = models.AutoField(db_column='Код', primary_key=True, blank=True)
@@ -15,7 +13,7 @@ class Результат_Шкафы_с_артикулами(models.Model):
     глубина = models.IntegerField(db_column='Глубина', blank=True, null=True)
     цвет_профиля = models.TextField(db_column='Цвет_профиля', blank=True, null=True)
     название_рендера = models.TextField(db_column='Название_рендера', blank=True, null=True)
-    артикул_шкафа = models.OneToOneField(Ya_links, to_field='name', on_delete=models.DO_NOTHING, db_constraint=False, related_name="wardropes", db_column="Артикул_шкафа", unique=True)
+    артикул_шкафа = models.CharField(db_column='Артикул_шкафа', max_length=300, unique=True)
     дверь_1_секционность = models.TextField(db_column='Дверь_1_Секционность', blank=True, null=True)
     дверь_2_секционность = models.TextField(db_column='Дверь_2_Секционность', blank=True, null=True)
     дверь_3_секционность = models.TextField(db_column='Дверь_3_Секционность', blank=True, null=True)
@@ -39,7 +37,7 @@ class Результат_Шкафы_с_артикулами(models.Model):
 class Результат_Стоимость_шкафов_CSKU(models.Model):
     Код = models.AutoField(db_column='Код', primary_key=True, blank=True)
     CKU = models.CharField(max_length=255, null=True)
-    Артикул = models.OneToOneField(Ya_links, to_field='name', on_delete=models.DO_NOTHING, db_constraint=False, related_name="wardropes_price", db_column="Артикул", unique=True)
+    Артикул = models.OneToOneField(Результат_Шкафы_с_артикулами, to_field='артикул_шкафа', on_delete=models.DO_NOTHING, db_constraint=False, related_name="wardropes_price", db_column="Артикул", unique=True)
     Серия = models.CharField(max_length=255, null=True)
     Тип_шкафа = models.CharField(max_length=255, null=True)
     Вариант_исполнения_шкафа = models.CharField(max_length=255, null=True)
