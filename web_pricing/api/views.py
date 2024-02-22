@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
-from pricing.models import Результат_Стоимость_шкафов_CSKU, Результат_Шкафы_с_артикулами
+from pricing.models import Результат_Шкафы_с_артикулами
 from .paginators import PageLimitPaginator
-from .filters import LinksFilter, WardrobeFilter
+from .filters import WardrobeFilter
 
-from .serializers import UniqueFieldValuesSerializer, WardrobePriceSerializer, WardrobeSerializer, Ya_linksSerializer
-from ya_disk.models import Ya_links
+from .serializers import (UniqueFieldValuesSerializer,
+                          WardrobeSerializer,)
 from ya_disk.ya_api import fetch_data_and_update_db
 
 
@@ -21,21 +21,6 @@ def get_ya_links(request):
         return HttpResponse("Ссылки на рендеры обновлены.")
     else:
         return HttpResponse("Не удалось обновить ссылки на рендеры.")
-
-
-
-class YalinksViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ya_links.objects.all().prefetch_related("wardropes_price").prefetch_related("wardropes")
-    serializer_class = Ya_linksSerializer
-    pagination_class = PageLimitPaginator
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = LinksFilter
-
-    @method_decorator(cache_page(60 * 15))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-
 
 
 class WardrobesFiltersViewSet(viewsets.ReadOnlyModelViewSet):
@@ -87,17 +72,9 @@ class WardrobesFiltersViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class WardrobesPricesViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Результат_Стоимость_шкафов_CSKU.objects.all()
-    serializer_class = WardrobePriceSerializer
-    pagination_class = PageLimitPaginator
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_class = LinksFilter
-
-
 class WardrobesViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Результат_Шкафы_с_артикулами.objects.all().prefetch_related('links').prefetch_related('wardropes_price')
     serializer_class = WardrobeSerializer
     pagination_class = PageLimitPaginator
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_class = LinksFilter
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = WardrobeFilter
