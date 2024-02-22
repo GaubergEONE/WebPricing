@@ -3,8 +3,6 @@ from django.db import transaction
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 
 from pricing.models import Результат_Шкафы_с_артикулами
 from .paginators import PageLimitPaginator
@@ -28,10 +26,6 @@ class WardrobesFiltersViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UniqueFieldValuesSerializer
     filter_backends = (DjangoFilterBackend, )
     filterset_class = WardrobeFilter
-
-    @method_decorator(cache_page(60 * 15))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
