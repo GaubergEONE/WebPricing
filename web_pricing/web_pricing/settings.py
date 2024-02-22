@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "debug_toolbar",
+    "corsheaders",
     "ya_disk.apps.YaDiskConfig",
     "pricing.apps.PricingConfig",
     "api.apps.ApiConfig",
@@ -56,6 +57,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = "web_pricing.urls"
@@ -144,6 +147,8 @@ CACHES = {
     }
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
 # LOGGING = {'version': 1, 'handlers': {'console': {'class': 'logging.StreamHandler'} },
 #            'loggers': {'django.db.backends': {'handlers': ['console'], 'level': 'DEBUG'}}}
